@@ -1,11 +1,5 @@
-import { Send, Menu, X, Mic, MicOff, Globe } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
-declare global {
-  interface Window {
-    SpeechRecognition: typeof SpeechRecognition;
-    webkitSpeechRecognition: typeof SpeechRecognition;
-  }
-}
+import { Send, Menu, X, Mic, MicOff, Globe } from 'lucide-react';
 import { Message } from './types';
 import { sendMessageToGeminiBoth } from './services/geminiService';
 import { QUICK_QUESTIONS, QUICK_QUESTIONS_EN, getRelatedQuestions, getRelatedQuestionsEn } from './constants';
@@ -13,6 +7,13 @@ import MessageBubble from './components/MessageBubble';
 import TypingIndicator from './components/TypingIndicator';
 import CountdownCard from './components/CountdownCard';
 import ContactInfoCard from './components/ContactInfoCard';
+
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
 type Language = 'ar' | 'en';
 
 const WELCOME_MESSAGE_AR = 'مرحباً بك في جامعة الحسين التقنية\nيمكنني مساعدتك بالإجابة على أسئلتك حول القبول والتخصصات';
