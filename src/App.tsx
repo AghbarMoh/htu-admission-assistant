@@ -8,15 +8,6 @@ import TypingIndicator from './components/TypingIndicator';
 import CountdownCard from './components/CountdownCard';
 import ContactInfoCard from './components/ContactInfoCard';
 
-declare global {
-  interface Window {
-    SpeechRecognition: any;
-    webkitSpeechRecognition: any;
-  }
-  type SpeechRecognition = any;
-  type SpeechRecognitionEvent = any;
-}
-
 type Language = 'ar' | 'en';
 
 const WELCOME_MESSAGE_AR = 'مرحباً بك في جامعة الحسين التقنية\nيمكنني مساعدتك بالإجابة على أسئلتك حول القبول والتخصصات';
@@ -127,11 +118,11 @@ const recognitionRef = useRef<any>(null);
   }, [sessionId]);
 
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
+const SpeechRecognition =
+  (window as any).SpeechRecognition ||
+  (window as any).webkitSpeechRecognition;    if (!SpeechRecognition) return;
 
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
+const recognition = new SpeechRecognition() as any;    recognition.continuous = false;
     recognition.interimResults = false;
 
    recognition.onresult = (event: any) => {
@@ -166,8 +157,9 @@ const recognitionRef = useRef<any>(null);
       recognitionRef.current?.stop();
       setIsListening(false);
     } else {
-      recognitionRef.current!.lang = language === 'ar' ? 'ar-JO' : 'en-US';
-      recognitionRef.current?.start();
+if (recognitionRef.current) {
+  recognitionRef.current.lang = language === 'ar' ? 'ar-JO' : 'en-US';
+}      recognitionRef.current?.start();
       setIsListening(true);
     }
   };
