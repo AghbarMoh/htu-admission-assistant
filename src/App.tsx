@@ -13,7 +13,10 @@ declare global {
     SpeechRecognition: any;
     webkitSpeechRecognition: any;
   }
+  type SpeechRecognition = any;
+  type SpeechRecognitionEvent = any;
 }
+
 type Language = 'ar' | 'en';
 
 const WELCOME_MESSAGE_AR = 'مرحباً بك في جامعة الحسين التقنية\nيمكنني مساعدتك بالإجابة على أسئلتك حول القبول والتخصصات';
