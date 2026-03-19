@@ -1,0 +1,1 @@
+{"root":["./eslint.config.js","./vite.config.ts","./src/app.tsx","./src/constants.ts","./src/index.tsx","./src/types.ts","./src/components/contactinfocard.tsx","./src/components/countdowncard.tsx","./src/components/countdowntimer.tsx","./src/components/messagebubble.tsx","./src/components/typingindicator.tsx","./src/services/geminiservice.ts"],"version":"5.9.3"}
