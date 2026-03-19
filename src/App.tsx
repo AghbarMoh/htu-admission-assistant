@@ -8,6 +8,16 @@ import TypingIndicator from './components/TypingIndicator';
 import CountdownCard from './components/CountdownCard';
 import ContactInfoCard from './components/ContactInfoCard';
 
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+
+  type SpeechRecognition = any;
+  type SpeechRecognitionEvent = any;
+}
+
 type Language = 'ar' | 'en';
 
 const WELCOME_MESSAGE_AR = 'مرحباً بك في جامعة الحسين التقنية\nيمكنني مساعدتك بالإجابة على أسئلتك حول القبول والتخصصات';
