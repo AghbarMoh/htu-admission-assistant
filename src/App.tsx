@@ -1,5 +1,11 @@
 import { Send, Menu, X, Mic, MicOff, Globe } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
+declare global {
+  interface Window {
+    SpeechRecognition: typeof SpeechRecognition;
+    webkitSpeechRecognition: typeof SpeechRecognition;
+  }
+}
 import { Message } from './types';
 import { sendMessageToGeminiBoth } from './services/geminiService';
 import { QUICK_QUESTIONS, QUICK_QUESTIONS_EN, getRelatedQuestions, getRelatedQuestionsEn } from './constants';
@@ -43,7 +49,7 @@ const App: React.FC = () => {
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+const recognitionRef = useRef<any>(null);
   const pendingLogRef = useRef<{
     question: string;
     answer: string;
@@ -124,7 +130,7 @@ const App: React.FC = () => {
     recognition.continuous = false;
     recognition.interimResults = false;
 
-   recognition.onresult = (event: SpeechRecognitionEvent) => {
+   recognition.onresult = (event: any) => {
   const transcript = event.results[0][0].transcript;
   setIsListening(false);
   handleSendMessage(transcript);
