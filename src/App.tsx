@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Menu, X, Mic, MicOff, Globe } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import { Message } from './types';
 import { sendMessageToGeminiBoth } from './services/geminiService';
 import { QUICK_QUESTIONS, QUICK_QUESTIONS_EN, getRelatedQuestions, getRelatedQuestionsEn } from './constants';
@@ -474,6 +475,7 @@ const App: React.FC = () => {
           />
         )}
       </div>
+      <Analytics />
     </div>
   );
 };
