@@ -35,6 +35,7 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
+const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
   const [sessionId] = useState(() => `session_${Math.random().toString(36).substring(2, 11)}_${Date.now()}`);
   const [ratingState, setRatingState] = useState<{
     submitted: boolean;
@@ -118,11 +119,12 @@ const App: React.FC = () => {
     const recognition = new SR();
     recognition.continuous = false;
     recognition.interimResults = false;
-    recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      setIsListening(false);
-      handleSendMessage(transcript);
-    };
+   recognition.onresult = (event: any) => {
+  const transcript = event.results[0][0].transcript;
+  setIsListening(false);
+  setIsVoiceProcessing(true);
+  handleSendMessage(transcript);
+};
     recognition.onerror = () => setIsListening(false);
     recognition.onend = () => setIsListening(false);
     recognitionRef.current = recognition;
@@ -184,9 +186,10 @@ const App: React.FC = () => {
       suggestedQuestionsEn: bothResponses.englishSuggestions,
     };
 
-    setMessages((prev) => [...prev, botMessage]);
-    setIsLoading(false);
-    setRatingState({ submitted: false, showForm: false, rating: '', comment: '' });
+   setMessages((prev) => [...prev, botMessage]);
+setIsLoading(false);
+setIsVoiceProcessing(false);
+setRatingState({ submitted: false, showForm: false, rating: '', comment: '' });
 
     const logData = {
       question: text,
@@ -408,38 +411,69 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          {/* Input Area */}
+         {/* Input Area */}
           <div className="p-4 relative z-30"
             style={{ borderTop: '1px solid rgba(200,16,46,0.15)' }}>
+
+            {/* Voice status pill */}
+            {(isListening || isVoiceProcessing) && (
+              <div className="flex justify-center mb-3 animate-fadeIn">
+                <div
+                  className="flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium"
+                  style={{
+                    background: isListening ? 'rgba(200,16,46,0.15)' : 'rgba(255,180,0,0.12)',
+                    border: isListening ? '1px solid rgba(200,16,46,0.4)' : '1px solid rgba(255,180,0,0.3)',
+                    color: isListening ? '#ff6b6b' : '#ffa500',
+                  }}
+                >
+                  <span className={isListening ? 'animate-pulse' : ''}>
+                    {isListening ? '🎤' : '⏳'}
+                  </span>
+                  <span>
+                    {isListening
+                      ? (isRTL ? 'جاري الاستماع...' : 'Listening...')
+                      : (isRTL ? 'جاري المعالجة...' : 'Processing...')
+                    }
+                  </span>
+                </div>
+              </div>
+            )}
+
             <div className="relative max-w-3xl mx-auto input-glow rounded-full"
               style={{
                 background: 'rgba(30,10,10,0.8)',
                 border: '1px solid rgba(200,16,46,0.25)',
               }}
             >
+              {/* Voice button — LEFT */}
+              <button
+                onClick={toggleVoice}
+                className={`absolute top-1/2 -translate-y-1/2 p-2.5 rounded-full transition-all duration-200 ${isRTL ? 'right-2' : 'left-2'}`}
+                title={isListening ? (isRTL ? 'إيقاف التسجيل' : 'Stop recording') : (isRTL ? 'تسجيل صوتي' : 'Voice input')}
+                style={{
+                  background: isListening
+                    ? 'rgba(200,16,46,0.2)'
+                    : 'rgba(255,255,255,0.05)',
+                  color: isListening ? '#ff6b6b' : 'rgba(255,255,255,0.4)',
+                  boxShadow: isListening ? '0 0 12px rgba(200,16,46,0.4)' : 'none',
+                }}
+              >
+                {isListening ? <MicOff size={18} /> : <Mic size={18} />}
+              </button>
+
+              {/* Input field */}
               <input
                 type="text"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={handleKeyPress}
                 placeholder={ui.placeholder}
-                className={`w-full bg-transparent text-white placeholder-white/30 text-base focus:outline-none py-4 ${isRTL ? 'pr-5 pl-28' : 'pl-5 pr-28'}`}
+                className={`w-full bg-transparent text-white placeholder-white/30 text-base focus:outline-none py-4 ${isRTL ? 'pr-14 pl-14' : 'pl-14 pr-14'}`}
                 disabled={isLoading}
                 dir={isRTL ? 'rtl' : 'ltr'}
               />
 
-              {/* Voice button */}
-              <button
-                onClick={toggleVoice}
-                className={`absolute top-1/2 -translate-y-1/2 p-2 rounded-full transition-all duration-200 ${isRTL ? 'left-14' : 'right-14'} ${
-                  isListening ? 'text-[#C8102E] animate-pulse' : 'text-white/40 hover:text-white/70'
-                }`}
-                title={isListening ? (isRTL ? 'إيقاف' : 'Stop') : (isRTL ? 'صوت' : 'Voice')}
-              >
-                {isListening ? <MicOff size={18} /> : <Mic size={18} />}
-              </button>
-
-              {/* Send orb */}
+              {/* Send orb — RIGHT */}
               <button
                 onClick={() => handleSendMessage()}
                 disabled={!inputText.trim() || isLoading}
@@ -453,16 +487,16 @@ const App: React.FC = () => {
               </button>
             </div>
 
-           <div className="text-center mt-3 px-4">
+            <div className="text-center mt-3 px-4">
               <p className="text-xs text-white/20 font-medium">{ui.copyright}</p>
-                <p className="text-[10px] text-white/15 mt-1 leading-relaxed max-w-md mx-auto"
-                   dir={isRTL ? 'rtl' : 'ltr'}>
-                     {isRTL
-                         ? 'المحتوى مُولَّد بالذكاء الاصطناعي وقد يحتوي على أخطاء. يُرجى التحقق من المعلومات مع دائرة القبول والتسجيل.'
-                          : 'AI-generated content may contain errors. Please verify with the Admissions & Registration Office.'
-                     }
-  </p>
-</div>
+              <p className="text-[10px] text-white/15 mt-1 leading-relaxed max-w-md mx-auto"
+                dir={isRTL ? 'rtl' : 'ltr'}>
+                {isRTL
+                  ? 'المحتوى مُولَّد بالذكاء الاصطناعي وقد يحتوي على أخطاء. يُرجى التحقق من المعلومات مع دائرة القبول والتسجيل.'
+                  : 'AI-generated content may contain errors. Please verify with the Admissions & Registration Office.'
+                }
+              </p>
+            </div>
           </div>
         </main>
 

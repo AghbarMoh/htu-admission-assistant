@@ -578,7 +578,7 @@ University Academic Structure:
 
 HTU is organized into three primary Schools:
 
-School of Technological Engineering (SET): Includes Industrial, Mechanical, Electrical, and Energy Engineering.
+School of Engineering Technology (SET): Includes Industrial, Mechanical, Electrical, and Energy Engineering.
 
 School of Computing and Informatics (SCI): Includes Computer Science, Data Science and AI, Cybersecurity, and Game Design and Development.
 
