@@ -3,15 +3,35 @@ import { Bot } from 'lucide-react';
 
 const TypingIndicator: React.FC = () => {
   return (
-    <div className="flex w-full mb-6 justify-start">
-      <div className="flex max-w-[85%] flex-row items-start gap-3">
-        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/10 text-white border border-white/20 backdrop-blur-sm shadow-sm flex items-center justify-center">
-          <Bot size={18} />
+    <div className="flex w-full mb-8 justify-start">
+      <div className="flex flex-row items-start gap-3">
+
+        {/* Avatar */}
+        <div
+          className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
+          style={{
+            background: 'rgba(200,16,46,0.15)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 0 12px rgba(200,16,46,0.2)'
+          }}
+        >
+          <Bot size={18} className="text-[#C8102E]" />
         </div>
-        <div className="bg-[#D2132B] border border-white/10 px-4 py-4 rounded-2xl rounded-tl-sm shadow-sm flex items-center space-x-1 space-x-reverse h-[54px]">
-          <div className="w-2 h-2 bg-white rounded-full animate-bounce opacity-80" style={{ animationDelay: '0ms' }}></div>
-          <div className="w-2 h-2 bg-white rounded-full animate-bounce opacity-80" style={{ animationDelay: '150ms' }}></div>
-          <div className="w-2 h-2 bg-white rounded-full animate-bounce opacity-80" style={{ animationDelay: '300ms' }}></div>
+
+        {/* Dots */}
+        <div
+          className="flex items-center gap-2 px-5 py-4 rounded-3xl"
+          style={{
+            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '24px 24px 24px 6px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+            minHeight: '54px',
+          }}
+        >
+          <div className="w-2 h-2 rounded-full bg-[#C8102E] animate-bounce opacity-80" style={{ animationDelay: '0ms' }} />
+          <div className="w-2 h-2 rounded-full bg-[#C8102E] animate-bounce opacity-80" style={{ animationDelay: '150ms' }} />
+          <div className="w-2 h-2 rounded-full bg-[#C8102E] animate-bounce opacity-80" style={{ animationDelay: '300ms' }} />
         </div>
       </div>
     </div>

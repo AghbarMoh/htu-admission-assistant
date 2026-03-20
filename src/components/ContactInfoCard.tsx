@@ -1,5 +1,5 @@
 import React from 'react';
-import { HelpCircle, Mail } from 'lucide-react';
+import { Mail, HelpCircle } from 'lucide-react';
 
 interface ContactInfoCardProps {
   language: 'ar' | 'en';
@@ -22,52 +22,47 @@ const ContactInfoCard: React.FC<ContactInfoCardProps> = ({ language }) => {
         scholarships: 'Scholarships Office',
       };
 
+  const contacts = [
+    { label: labels.admissions, email: 'admissionteam@htu.edu.jo' },
+    { label: labels.finance, email: 'FinanceDepartment@htu.edu.jo' },
+    { label: labels.scholarships, email: 'htu.scholarships@htu.edu.jo' },
+  ];
+
   return (
-    <div className="bg-white/10 rounded-xl p-4 shadow-sm border border-white/20 backdrop-blur-sm mb-4 mt-2">
-      <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-        <HelpCircle size={18} className="text-white" />
-        {labels.title}
-      </h3>
+    <div className="rounded-2xl p-4 mb-4"
+      style={{
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.08)',
+      }}
+    >
+      {/* Title */}
+      <div className="flex items-center gap-2 mb-4 pb-3"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <HelpCircle size={16} className="text-[#C8102E]" />
+        <h3 className="font-bold text-sm text-white">{labels.title}</h3>
+      </div>
 
-      <div className="space-y-4 text-sm">
-        <div className="flex items-start gap-3">
-          <Mail size={16} className="text-white/80 mt-1 flex-shrink-0" />
-          <div>
-            <span className="block font-medium text-white/90">{labels.admissions}</span>
-            <a
-              href="mailto:admissionteam@htu.edu.jo"
-              className="text-white hover:underline decoration-white/50 break-all text-xs"
-            >
-              admissionteam@htu.edu.jo
-            </a>
+      {/* Contacts */}
+      <div className="flex flex-col gap-3">
+        {contacts.map((contact, idx) => (
+          <div key={idx} className="flex items-start gap-3">
+            <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+              style={{ background: 'rgba(200,16,46,0.15)' }}>
+              <Mail size={13} className="text-[#C8102E]" />
+            </div>
+            <div>
+              <span className="block text-xs font-medium text-white/60 mb-0.5">
+                {contact.label}
+              </span>
+              <a
+                href={`mailto:${contact.email}`}
+                className="text-xs text-white/40 hover:text-[#C8102E] transition-colors break-all"
+              >
+                {contact.email}
+              </a>
+            </div>
           </div>
-        </div>
-
-        <div className="flex items-start gap-3">
-          <Mail size={16} className="text-white/80 mt-1 flex-shrink-0" />
-          <div>
-            <span className="block font-medium text-white/90">{labels.finance}</span>
-            <a
-              href="mailto:FinanceDepartment@htu.edu.jo"
-              className="text-white hover:underline decoration-white/50 break-all text-xs"
-            >
-              FinanceDepartment@htu.edu.jo
-            </a>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-3">
-          <Mail size={16} className="text-white/80 mt-1 flex-shrink-0" />
-          <div>
-            <span className="block font-medium text-white/90">{labels.scholarships}</span>
-            <a
-              href="mailto:htu.scholarships@htu.edu.jo"
-              className="text-white hover:underline decoration-white/50 break-all text-xs"
-            >
-              htu.scholarships@htu.edu.jo
-            </a>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

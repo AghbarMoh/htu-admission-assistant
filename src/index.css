@@ -12,41 +12,124 @@ html, body, #root {
 
 body {
   font-family: 'Noto Sans Arabic', sans-serif;
-  background-color: #f8fafc;
+  background-color: #0a0a0a;
 }
 
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
-}
-.scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
+/* Scrollbar hide */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* Main background — deep dark radial gradient */
 .bg-pattern {
-  background-color: #f8fafc;
-  background-image: 
-    linear-gradient(rgba(200, 16, 46, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(200, 16, 46, 0.03) 1px, transparent 1px);
-  background-size: 30px 30px;
-  background-position: center center;
+  background: radial-gradient(ellipse at 20% 20%, rgba(200, 16, 46, 0.18) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 10%, rgba(200, 16, 46, 0.12) 0%, transparent 45%),
+              radial-gradient(ellipse at 50% 100%, rgba(180, 0, 30, 0.08) 0%, transparent 60%),
+              linear-gradient(135deg, #1a0000 0%, #0a0a0a 50%, #0f0505 100%);
+  background-attachment: fixed;
 }
 
+/* Glow orbs */
 .bg-pattern::before {
   content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-  background: radial-gradient(circle at 50% 50%, rgba(200, 16, 46, 0.05) 0%, transparent 60%);
+  position: fixed;
+  top: -120px;
+  left: -120px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(200, 16, 46, 0.15) 0%, transparent 70%);
   pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(40px);
 }
 
+.bg-pattern::after {
+  content: "";
+  position: fixed;
+  top: -80px;
+  right: -80px;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(200, 16, 46, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(50px);
+}
+
+/* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .animate-fadeIn {
   animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Input glow */
+.input-glow {
+  box-shadow: 0 0 0 1px rgba(200, 16, 46, 0.3),
+              0 0 20px rgba(200, 16, 46, 0.15),
+              0 0 40px rgba(200, 16, 46, 0.08);
+  transition: box-shadow 0.3s ease;
+}
+
+.input-glow:focus-within {
+  box-shadow: 0 0 0 1px rgba(200, 16, 46, 0.6),
+              0 0 25px rgba(200, 16, 46, 0.25),
+              0 0 50px rgba(200, 16, 46, 0.12);
+}
+
+/* Send orb */
+.send-orb {
+  background: linear-gradient(135deg, #C8102E 0%, #ff4d6d 50%, #C8102E 100%);
+  background-size: 200% 200%;
+  animation: shimmer 3s linear infinite;
+  box-shadow: 0 0 15px rgba(200, 16, 46, 0.5),
+              0 0 30px rgba(200, 16, 46, 0.2);
+  transition: all 0.2s ease;
+}
+
+.send-orb:hover {
+  box-shadow: 0 0 20px rgba(200, 16, 46, 0.7),
+              0 0 40px rgba(200, 16, 46, 0.3);
+  transform: scale(1.05);
+}
+
+.send-orb:disabled {
+  background: #2a2a2a;
+  box-shadow: none;
+  transform: none;
+  animation: none;
+}
+
+/* Glass card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.04);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Suggested question pills */
+.suggestion-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-left: 3px solid #C8102E;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: all 0.25s ease;
+}
+
+.suggestion-pill:hover {
+  background: rgba(200, 16, 46, 0.12);
+  border-color: rgba(255, 255, 255, 0.15);
+  border-left-color: #C8102E;
+  box-shadow: 0 0 15px rgba(200, 16, 46, 0.15);
+  transform: translateY(-1px);
 }
