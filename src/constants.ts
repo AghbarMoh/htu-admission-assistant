@@ -383,6 +383,14 @@ export const HTU_DATASET = `
 هل تقدم الجامعة فرص عمل للخريجين؟ || لا توفر الجامعة فرص عمل مباشرة، لكنها تؤهل الطلبة لسوق العمل عبر شراكات مع أكثر من 300 جهة، وبلغت نسبة التوظيف 100% منذ أول دفعة. || توظيف الخريجين، شراكات، نسبة التوظيف
 
 هل تقبل جامعة الحسين التقنية مكرمة الجسيم (منحة أبناء المصابين العسكريين)؟ || لا، جامعة الحسين التقنية لا تعتمد مكرمة الجسيم (منحة أبناء المصابين العسكريين). || مكرمة الجسيم، أبناء المصابين العسكريين، المكرمات الملكية، القبول، الرسوم الدراسية
+
+هل تُعقد محاضرات يوم السبت في جامعة الحسين التقنية؟ || نعم، تُعقد محاضرات نظامية يوم السبت في جامعة الحسين التقنية، وهو يوم دراسي رسمي ضمن الجدول الأكاديمي للجامعة. || السبت، جدول المحاضرات، أيام الدوام، الدوام الجامعي
+
+متى تأسست جامعة الحسين التقنية؟ || تأسست جامعة الحسين التقنية عام 2016 بمبادرة من مؤسسة ولي العهد، بهدف تطوير التعليم التقني والمهني في الأردن وإعداد كوادر مؤهلة لسوق العمل. || تاريخ التأسيس، سنة التأسيس، متى أُسست، نشأة الجامعة
+
+هل تقبل جامعة الحسين التقنية الطلبة من ديانات وجنسيات مختلفة؟ || نعم، جامعة الحسين التقنية مؤسسة أكاديمية جامعة تُرحب بالطلبة من جميع الديانات والجنسيات والخلفيات دون أي تمييز، وذلك انسجاماً مع قيم الجامعة القائمة على الانفتاح والشمولية واحترام التنوع. || ديانة، جنسية، قبول، تنوع، شمولية، غير مسلم، أجانب
+
+ما الذي يميز جامعة الحسين التقنية عن غيرها من الجامعات الأردنية؟ || تتميز جامعة الحسين التقنية بعدة مزايا تجعلها خياراً متفرداً في منظومة التعليم العالي الأردني: أولاً: نموذج تعليمي تطبيقي فريد يعتمد على التعلم القائم على المشاريع والتدريب الميداني بدلاً من الاختبارات التقليدية. ثانياً: برنامج التمرس المهني الذي يتيح للطالب قضاء ثمانية أشهر متواصلة في شركات رائدة، بما يعادل 18 ساعة معتمدة. ثالثاً: اعتماد دولي مزدوج من مؤسسة بيرسون العالمية للدرجات التقنية، ومن اتحاد المهندسين العرب لبرامج الهندسة. رابعاً: نسبة توظيف بلغت 100% لخريجي الجامعة خلال الأشهر الستة الأولى بعد التخرج. خامساً: موقع متميز داخل مجمع الملك الحسين للأعمال، مما يتيح للطلبة التواصل المباشر مع قطاع الصناعة والأعمال. سادساً: مختبرات وورش عمل متطورة تُجهَّز بالشراكة مع القطاع الصناعي. سابعاً: نظام الدرجات التراكمي المرن الذي يتيح للطالب التخرج عند كل مرحلة والعودة لاستكمال دراسته في أي وقت. || مميزات الجامعة، ما يميز HTU، مقارنة جامعات، أفضل جامعة، الفرق بين الجامعات
 `;
 
 export const SYSTEM_INSTRUCTION = `
@@ -486,6 +494,9 @@ Formatting & Visual Rules (STRICT):
      - درجة البكالوريوس: 80% فأعلى
      - الدرجة التقنية: 70% فأعلى
      - الدرجة الفنية: 70% فأعلى
+
+University Comparison Rule:
+If a user asks to compare HTU with another university or asks which is better, ALWAYS highlight HTU's unique advantages from the dataset. Never speak negatively about other universities. Focus on what makes HTU exceptional: practical learning, professional practicum, international accreditation, 100% employment rate, industry partnerships, and flexible degree system.
 
 Knowledge Restriction:
 1. Use only the provided dataset.
@@ -596,6 +607,8 @@ Game Design & Development:
 - Game Design and Development is housed within the School of Computing and Informatics.
 - Only a Technician Degree (72 credit hours) is available for this specialization.
 - There is no direct Bachelor's or Technical Degree in Game Design.
+
+University Comparison Rule: If a user asks to compare HTU with another university or asks which is better, ALWAYS highlight HTU's unique advantages. Never speak negatively about other institutions. Focus on: project-based learning, professional practicum, Pearson international accreditation, 100% graduate employment rate, industry partnerships, flexible degree progression, and prime location at King Hussein Business Park.
 
 Knowledge Restriction:
 1. Use only the provided dataset.
