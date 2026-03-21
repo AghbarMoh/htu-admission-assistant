@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Menu, X, Mic, MicOff, Globe } from 'lucide-react';
-import { Analytics } from '@vercel/analytics/react';
+import { Send, Menu, X, Mic, Globe } from 'lucide-react';import { Analytics } from '@vercel/analytics/react';
 import { Message } from './types';
 import { sendMessageToGeminiBoth } from './services/geminiService';
 import { QUICK_QUESTIONS, QUICK_QUESTIONS_EN, getRelatedQuestions, getRelatedQuestionsEn } from './constants';
@@ -448,17 +447,19 @@ setRatingState({ submitted: false, showForm: false, rating: '', comment: '' });
               {/* Voice button — LEFT */}
               <button
                 onClick={toggleVoice}
-                className={`absolute top-1/2 -translate-y-1/2 p-2.5 rounded-full transition-all duration-200 ${isRTL ? 'right-2' : 'left-2'}`}
+                className={`absolute top-1/2 -translate-y-1/2 p-2.5 rounded-full transition-all duration-200 ${isRTL ? 'right-2' : 'left-2'} ${isListening ? 'mic-heartbeat' : ''}`}
                 title={isListening ? (isRTL ? 'إيقاف التسجيل' : 'Stop recording') : (isRTL ? 'تسجيل صوتي' : 'Voice input')}
                 style={{
                   background: isListening
-                    ? 'rgba(200,16,46,0.2)'
-                    : 'rgba(255,255,255,0.05)',
-                  color: isListening ? '#ff6b6b' : 'rgba(255,255,255,0.4)',
-                  boxShadow: isListening ? '0 0 12px rgba(200,16,46,0.4)' : 'none',
+                    ? 'rgba(255,255,255,0.08)'
+                    : 'rgba(200,16,46,0.15)',
+                  color: isListening ? '#ffffff' : '#C8102E',
+                  boxShadow: isListening
+                    ? '0 0 16px rgba(200,16,46,0.5), 0 0 32px rgba(200,16,46,0.2)'
+                    : 'none',
                 }}
               >
-                {isListening ? <MicOff size={18} /> : <Mic size={18} />}
+                <Mic size={18} />
               </button>
 
               {/* Input field */}

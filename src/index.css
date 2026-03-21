@@ -133,3 +133,15 @@ body {
   box-shadow: 0 0 15px rgba(200, 16, 46, 0.15);
   transform: translateY(-1px);
 }
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.2); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.15); }
+  70% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+.mic-heartbeat {
+  animation: heartbeat 1.2s ease-in-out infinite;
+}
