@@ -635,6 +635,20 @@ export const getRelatedQuestions = (userQuery: string): string[] => {
 
   if (queryTerms.length === 0) return QUICK_QUESTIONS;
 
+  // Special case: user asked about available majors
+  const majorsTriggers = ['تخصصات', 'تخصص', 'برامج', 'كليات', 'المتاحة', 'الموجودة', 'majors', 'programs', 'specializations'];
+  const isMajorsQuery = majorsTriggers.some(trigger => userQuery.toLowerCase().includes(trigger));
+
+  if (isMajorsQuery) {
+    return [
+      "ما هو تخصص علوم الحاسوب؟",
+      "ما هو تخصص الأمن السيبراني؟",
+      "ما هو تخصص الهندسة الكهربائية؟",
+      "ما هو تخصص علم البيانات والذكاء الاصطناعي؟",
+      "ما هو تخصص الهندسة المعمارية؟",
+    ];
+  }
+
   const scores = lines.map(line => {
     const parts = line.split('||');
     const question = parts[0]?.trim() || '';
@@ -650,11 +664,20 @@ export const getRelatedQuestions = (userQuery: string): string[] => {
     return { question, score };
   });
 
+  // Filter out the game design degree question from suggestions
+  const excludedQuestions = [
+    'ما هي الدرجات الأكاديمية المتاحة لتخصص تصميم وتطوير الألعاب؟'
+  ];
+
   let suggestions = scores
     .filter(s => s.score > 0)
     .sort((a, b) => b.score - a.score)
     .map(s => s.question)
-    .filter((q, index, self) => self.indexOf(q) === index && q !== userQuery);
+    .filter((q, index, self) =>
+      self.indexOf(q) === index &&
+      q !== userQuery &&
+      !excludedQuestions.includes(q)
+    );
 
   if (suggestions.length === 0) {
     return QUICK_QUESTIONS.filter(q => q !== userQuery).slice(0, 4);
@@ -690,6 +713,21 @@ export const getRelatedQuestionsEn = (userQuery: string): string[] => {
   };
 
   const queryLower = userQuery.toLowerCase();
+
+  // Special case: user asked about available majors
+  const majorsTriggers = ['major', 'majors', 'program', 'programs', 'specialization', 'available', 'offered'];
+  const isMajorsQuery = majorsTriggers.some(trigger => queryLower.includes(trigger));
+
+  if (isMajorsQuery) {
+    return [
+      "What is the Computer Science program?",
+      "What is the Cybersecurity program?",
+      "What is the Electrical Engineering program?",
+      "What is the Data Science and AI program?",
+      "What is the Architectural Engineering program?",
+    ];
+  }
+
   const matchedQuestions: string[] = [];
 
   for (const [keyword, questions] of Object.entries(englishKeywordMap)) {
