@@ -53,8 +53,23 @@ export const sendMessageToGeminiBoth = async (
       arabicSuggestions: getArabicSuggestions(userMessage),
       englishSuggestions: getEnglishSuggestions(userMessage),
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini API Error:", error);
+
+    // Check if the error is a 503 Service Unavailable / High Demand
+    const errorMessage = error?.message || String(error);
+    const isOverloaded = error?.status === 503 || errorMessage.includes("503") || errorMessage.includes("high demand");
+
+    if (isOverloaded) {
+      return {
+        arabic: "عذراً، النظام يواجه ضغطاً كبيراً في الطلبات حالياً. يرجى المحاولة مرة أخرى بعد قليل.",
+        english: "Sorry, the AI is currently experiencing high demand. Please try again in a few moments.",
+        arabicSuggestions: getArabicSuggestions(userMessage),
+        englishSuggestions: getEnglishSuggestions(userMessage),
+      };
+    }
+
+    // Default fallback for any other errors
     return {
       arabic: "عذراً، أواجه مشكلة في الاتصال بالنظام. يرجى المحاولة لاحقاً.",
       english: "Sorry, I'm experiencing a connection issue. Please try again later.",
