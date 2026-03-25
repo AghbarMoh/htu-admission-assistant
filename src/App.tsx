@@ -85,14 +85,14 @@ const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
     const url = 'https://script.google.com/macros/s/AKfycbwWM4u6vT03fa6JN6zSIAVxdtGLBw7Dw6-oigPZ3nktc6NLaAPrzeTS5395-mjnogs4kw/exec';
 
     try {
-      if (typeof navigator.sendBeacon === 'function') {
-        const blob = new Blob([payload], { type: 'text/plain' });
-        const success = navigator.sendBeacon(url, blob);
-        if (success) return;
-      }
       fetch(url, {
-        method: 'POST', mode: 'no-cors', keepalive: true,
-        headers: { 'Content-Type': 'text/plain' }, body: payload,
+        method: 'POST', 
+        mode: 'no-cors', 
+        keepalive: true,
+        headers: { 'Content-Type': 'text/plain' }, 
+        body: payload,
+      }).catch(error => {
+        if (!isExiting) console.warn('Logging failed:', error);
       });
     } catch (error) {
       if (!isExiting) console.warn('Logging failed:', error);
