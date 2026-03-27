@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Menu, X, Mic, Globe } from 'lucide-react';import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Message } from './types';
 import { sendMessageToGeminiBoth } from './services/geminiService';
 import { QUICK_QUESTIONS, QUICK_QUESTIONS_EN, getRelatedQuestions, getRelatedQuestionsEn } from './constants';
@@ -511,6 +512,7 @@ setRatingState({ submitted: false, showForm: false, rating: '', comment: '' });
         )}
       </div>
       <Analytics />
+      <SpeedInsights />
     </div>
   );
 };
