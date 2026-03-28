@@ -1,4 +1,4 @@
-import { SYSTEM_INSTRUCTION, SYSTEM_INSTRUCTION_EN } from "../constants";
+// 1. Notice we completely removed the import from "../constants" up here!
 
 export interface BothResponses {
   arabic: string;
@@ -19,10 +19,9 @@ export const sendMessageToGeminiBoth = async (
       headers: {
         'Content-Type': 'application/json',
       },
+      // 2. SECURE: Only send the message. The server now handles the instructions safely.
       body: JSON.stringify({
-        message: userMessage,
-        instructionAr: SYSTEM_INSTRUCTION,
-        instructionEn: SYSTEM_INSTRUCTION_EN
+        message: userMessage
       }),
     });
 

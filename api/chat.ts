@@ -1,52 +1,78 @@
 import { GoogleGenAI } from "@google/genai";
+import { SYSTEM_INSTRUCTION, SYSTEM_INSTRUCTION_EN } from "../src/constants"; 
 
 export default async function handler(req: any, res: any) {
-  // 1. Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // 2. Verify API Key exists
+  // ==========================================
+  // SECURITY 1: ORIGIN CHECK (CORS Protection)
+  // ==========================================
+  const origin = req.headers.origin || req.headers.referer;
+  
+  // These are the ONLY websites allowed to talk to your backend
+  const allowedDomains = [
+    'http://localhost:3000',      // For your local testing
+    'http://localhost:5173',      // For Vite local testing
+    'https://htuaibot.xyz',       // Your custom domain!
+    'https://www.htuaibot.xyz'    // Your custom domain (with www)
+  ];
+
+  // If a request comes from somewhere else, block it!
+  if (origin && !allowedDomains.some(domain => origin.startsWith(domain))) {
+    console.warn(`Blocked unauthorized request from origin: ${origin}`);
+    return res.status(403).json({ error: 'Forbidden: Invalid Origin' });
+  }
+  // ==========================================
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    console.error("CRITICAL ERROR: GEMINI_API_KEY is missing from environment variables.");
-    return res.status(500).json({ error: 'Server Configuration Error: API Key missing' });
+    return res.status(500).json({ error: 'API Key missing on server' });
   }
 
   try {
-    const { message, instructionAr, instructionEn } = req.body;
+    const { message } = req.body; 
 
-    if (!message) {
-      return res.status(400).json({ error: 'Message is required' });
+    // ==========================================
+    // SECURITY 2: TOKEN BOMB PROTECTION
+    // ==========================================
+    if (!message || typeof message !== 'string') {
+      return res.status(400).json({ error: 'Invalid message format' });
     }
+    
+    // Even if they bypass React, the server strictly limits the size
+    if (message.length > 500) {
+      return res.status(400).json({ error: 'Message exceeds allowed length' });
+    }
+    // ==========================================
 
     const ai = new GoogleGenAI({ apiKey });
 
-    // 3. Process both languages
-    const [arabicResponse, englishResponse] = await Promise.all([
+    // Send the securely assembled prompt to Gemini
+    const [arabicResult, englishResult] = await Promise.all([
       ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: message,
-        config: { systemInstruction: instructionAr, temperature: 0.3 },
+        config: { systemInstruction: SYSTEM_INSTRUCTION, temperature: 0.3 } 
       }),
       ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: message,
-        config: { systemInstruction: instructionEn, temperature: 0.3 },
+        config: { systemInstruction: SYSTEM_INSTRUCTION_EN, temperature: 0.3 }
       })
     ]);
 
     return res.status(200).json({
-      arabic: arabicResponse.text,
-      english: englishResponse.text
+      arabic: arabicResult.text,
+      english: englishResult.text
     });
 
   } catch (error: any) {
-    // This will show up in your Vercel logs
-    console.error("GEMINI BACKEND ERROR:", error.message || error);
+    console.error("DETAILED ERROR LOG:", error.message || error);
     return res.status(500).json({ 
-      error: 'Failed to generate content',
-      details: error.message 
+      error: 'Gemini Execution Failed',
+      message: error.message 
     });
   }
 }

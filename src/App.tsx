@@ -65,7 +65,7 @@ const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
     document.documentElement.setAttribute('lang', isRTL ? 'ar' : 'en');
   }, [language, isRTL]);
 
-  const logChat = (params: {
+ const logChat = (params: {
     question: string;
     answer: string;
     rating?: string;
@@ -84,14 +84,15 @@ const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
       timestamp, question, answer, sessionId, rating, comment
     });
 
-    const url = 'https://script.google.com/macros/s/AKfycbwWM4u6vT03fa6JN6zSIAVxdtGLBw7Dw6-oigPZ3nktc6NLaAPrzeTS5395-mjnogs4kw/exec';
+    // We changed this to point ONLY to your local backend!
+    const url = '/api/log';
 
     try {
       fetch(url, {
         method: 'POST', 
-        mode: 'no-cors', 
         keepalive: true,
-        headers: { 'Content-Type': 'text/plain' }, 
+        // mode: 'no-cors' has been DELETED, and Content-Type is now application/json
+        headers: { 'Content-Type': 'application/json' }, 
         body: payload,
       }).catch(error => {
         if (!isExiting) console.warn('Logging failed:', error);
