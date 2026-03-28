@@ -32,6 +32,8 @@ const App: React.FC = () => {
   ]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const TEXT_LIMIT = 240; 
+  const VOICE_LIMIT = 400;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
 const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
@@ -122,7 +124,7 @@ const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
   const transcript = event.results[0][0].transcript;
   setIsListening(false);
   setIsVoiceProcessing(true);
-  handleSendMessage(transcript);
+  handleSendMessage(transcript, true);
 };
     recognition.onerror = () => setIsListening(false);
     recognition.onend = () => setIsListening(false);
@@ -155,9 +157,18 @@ const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
     }
   };
 
-  const handleSendMessage = async (text: string = inputText) => {
+  const handleSendMessage = async (text: string = inputText, isVoice: boolean = false) => {
     if (!text.trim() || isLoading) return;
     pendingLogRef.current = null;
+
+    const currentLimit = isVoice ? VOICE_LIMIT : TEXT_LIMIT;
+    if (text.length > currentLimit) {
+      alert(language === 'ar' 
+        ? `عذراً، الرسالة طويلة جداً. الحد الأقصى هو ${isVoice ? '5 أسطر' : '3 أسطر'}.` 
+        : `Message too long. Max allowed is ${isVoice ? '5 lines' : '3 lines'}.`);
+      setIsVoiceProcessing(false);
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -465,6 +476,7 @@ setRatingState({ submitted: false, showForm: false, rating: '', comment: '' });
               {/* Input field */}
               <input
                 type="text"
+                maxLength={TEXT_LIMIT}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={handleKeyPress}
