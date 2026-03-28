@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { SYSTEM_INSTRUCTION, SYSTEM_INSTRUCTION_EN } from "../src/constants"; 
+import { SYSTEM_INSTRUCTION, SYSTEM_INSTRUCTION_EN } from "../src/constants.js"; 
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
