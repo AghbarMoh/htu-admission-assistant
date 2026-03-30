@@ -14,8 +14,8 @@ import ContactInfoCard from "./components/ContactInfoCard";
 import EmailSubscribe from "./components/EmailSubscribe";
 
 // Initialize Supabase
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.VITE_SUPABASE_URL!;
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY!;
 
 console.log("DEBUG: Supabase URL is:", supabaseUrl ? "Found ✅" : "MISSING ❌");
 console.log("DEBUG: Supabase Key is:", supabaseKey ? "Found ✅" : "MISSING ❌");
