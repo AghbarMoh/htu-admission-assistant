@@ -56,12 +56,12 @@ export default async function handler(req: any, res: any) {
     const ai = new GoogleGenAI({ apiKey });
     const [arabicResult, englishResult] = await Promise.all([
       ai.models.generateContent({
-        model: "gemini-1.5-flash", // NOTE: Changed to 1.5-flash as 2.5 doesn't exist yet!
+        model: "gemini-2.5-flash", // NOTE: Changed to 1.5-flash as 2.5 doesn't exist yet!
         contents: message,
         config: { systemInstruction: finalAr, temperature: 0.3 } 
       }),
       ai.models.generateContent({
-        model: "gemini-1.5-flash",
+        model: "gemini-2.5-flash",
         contents: message,
         config: { systemInstruction: finalEn, temperature: 0.3 }
       })
