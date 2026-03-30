@@ -1,77 +1,80 @@
 import { GoogleGenAI } from "@google/genai";
-import { SYSTEM_INSTRUCTION, SYSTEM_INSTRUCTION_EN } from "../src/constants.js"; 
+import { createClient } from "@supabase/supabase-js";
+
+// Initialize Supabase - Backend uses standard process.env
+const supabase = createClient(
+  process.env.SUPABASE_URL || '', 
+  process.env.SUPABASE_SERVICE_KEY || ''
+);
 
 export default async function handler(req: any, res: any) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
 
-  // ==========================================
-  // SECURITY 1: ORIGIN CHECK (CORS Protection)
-  // ==========================================
-  const origin = req.headers.origin || req.headers.referer;
-  
-  // These are the ONLY websites allowed to talk to your backend
-  const allowedDomains = [
-    'http://localhost:3000',      // For your local testing
-    'http://localhost:5173',      // For Vite local testing
-    'https://htuaibot.xyz',       // Your custom domain!
-    'https://www.htuaibot.xyz'    // Your custom domain (with www)
-  ];
-
-  // If a request comes from somewhere else, block it!
-  if (origin && !allowedDomains.some(domain => origin.startsWith(domain))) {
-    console.warn(`Blocked unauthorized request from origin: ${origin}`);
-    return res.status(403).json({ error: 'Forbidden: Invalid Origin' });
-  }
-  // ==========================================
-
+  const { message } = req.body;
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return res.status(500).json({ error: 'API Key missing on server' });
-  }
+
+  // DIAGNOSTIC 1: Check Keys
+  if (!apiKey) return res.status(500).json({ error: 'Backend Error: GEMINI_API_KEY is missing.' });
+  if (!process.env.SUPABASE_SERVICE_KEY) return res.status(500).json({ error: 'Backend Error: SUPABASE_SERVICE_KEY is missing.' });
 
   try {
-    const { message } = req.body; 
+    // 1. Fetch Rules and Data
+    const [settingsRes, qaRes] = await Promise.all([
+      supabase.from('bot_settings').select('key, value'),
+      supabase.from('qa_entries').select('question, answer, keywords, category').eq('is_active', true)
+    ]);
 
-    // ==========================================
-    // SECURITY 2: TOKEN BOMB PROTECTION
-    // ==========================================
-    if (!message || typeof message !== 'string') {
-      return res.status(400).json({ error: 'Invalid message format' });
-    }
+    // DIAGNOSTIC 2: Check DB Response
+    if (settingsRes.error) throw new Error(`Supabase Settings Error: ${settingsRes.error.message}`);
     
-    // Even if they bypass React, the server strictly limits the size
-    if (message.length > 500) {
-      return res.status(400).json({ error: 'Message exceeds allowed length' });
+    const rawAr = settingsRes.data?.find(s => s.key === 'system_instruction_ar')?.value;
+    const rawEn = settingsRes.data?.find(s => s.key === 'system_instruction_en')?.value;
+
+    if (!rawAr || !rawEn) throw new Error("Backend Error: System instructions not found in database.");
+
+    // 2. Format Dataset
+    let dynamicData = "";
+    if (qaRes.data && qaRes.data.length > 0) {
+      const categories = [...new Set(qaRes.data.map(q => q.category))];
+      categories.forEach(cat => {
+        dynamicData += `${cat}\n\n`;
+        qaRes.data!.filter(q => q.category === cat).forEach(q => {
+          dynamicData += `${q.question} || ${q.answer} || ${q.keywords}\n`;
+        });
+        dynamicData += '\n';
+      });
     }
-    // ==========================================
 
+    // 3. Inject Data
+    const placeholder = '${HTU_DATASET}';
+    const finalAr = rawAr.replace(placeholder, dynamicData.trim());
+    const finalEn = rawEn.replace(placeholder, dynamicData.trim());
+
+    // 4. AI Call
     const ai = new GoogleGenAI({ apiKey });
-
-    // Send the securely assembled prompt to Gemini
     const [arabicResult, englishResult] = await Promise.all([
       ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: message,
-        config: { systemInstruction: SYSTEM_INSTRUCTION, temperature: 0.3 } 
+        config: { systemInstruction: finalAr, temperature: 0.3 } 
       }),
       ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: message,
-        config: { systemInstruction: SYSTEM_INSTRUCTION_EN, temperature: 0.3 }
+        config: { systemInstruction: finalEn, temperature: 0.3 }
       })
     ]);
 
-    return res.status(200).json({
-      arabic: arabicResult.text,
-      english: englishResult.text
+    return res.status(200).json({ 
+      arabic: arabicResult.text, 
+      english: englishResult.text 
     });
 
   } catch (error: any) {
-    console.error("DETAILED ERROR LOG:", error.message || error);
+    // This will now show up in your browser's Network tab/Console
+    console.error("DETAILED BACKEND ERROR:", error.message);
     return res.status(500).json({ 
-      error: 'Gemini Execution Failed',
+      error: 'Internal Server Error', 
       message: error.message 
     });
   }
