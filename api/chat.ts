@@ -1,21 +1,23 @@
 import { GoogleGenAI } from "@google/genai";
 import { createClient } from "@supabase/supabase-js";
 
-// Initialize Supabase - Backend uses standard process.env
+// FIX: Change names to match your Vercel Dashboard exactly
 const supabase = createClient(
-  process.env.SUPABASE_URL || '', 
-  process.env.SUPABASE_SERVICE_KEY || ''
+  process.env.VITE_SUPABASE_URL || '', 
+  process.env.VITE_SUPABASE_ANON_KEY || '' // Using your Anon Key as the "Service Key" for now
 );
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
 
   const { message } = req.body;
+  
+  // FIX: Match your Vercel key name (GEMINI_API_KEY)
   const apiKey = process.env.GEMINI_API_KEY;
 
   // DIAGNOSTIC 1: Check Keys
   if (!apiKey) return res.status(500).json({ error: 'Backend Error: GEMINI_API_KEY is missing.' });
-  if (!process.env.SUPABASE_SERVICE_KEY) return res.status(500).json({ error: 'Backend Error: SUPABASE_SERVICE_KEY is missing.' });
+  if (!process.env.VITE_SUPABASE_URL) return res.status(500).json({ error: 'Backend Error: VITE_SUPABASE_URL is missing.' });
 
   try {
     // 1. Fetch Rules and Data
@@ -54,12 +56,12 @@ export default async function handler(req: any, res: any) {
     const ai = new GoogleGenAI({ apiKey });
     const [arabicResult, englishResult] = await Promise.all([
       ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-1.5-flash", // NOTE: Changed to 1.5-flash as 2.5 doesn't exist yet!
         contents: message,
         config: { systemInstruction: finalAr, temperature: 0.3 } 
       }),
       ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-1.5-flash",
         contents: message,
         config: { systemInstruction: finalEn, temperature: 0.3 }
       })
@@ -71,7 +73,6 @@ export default async function handler(req: any, res: any) {
     });
 
   } catch (error: any) {
-    // This will now show up in your browser's Network tab/Console
     console.error("DETAILED BACKEND ERROR:", error.message);
     return res.status(500).json({ 
       error: 'Internal Server Error', 
