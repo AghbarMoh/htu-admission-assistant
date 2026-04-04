@@ -82,9 +82,17 @@ const AdminPanel: React.FC = () => {
   const saveSettings = async () => {
     setIsSaving(true);
     setSaveStatus("");
-    await supabase.from("bot_settings").update({ value: instructionAr }).eq("key", "system_instruction_ar");
-    await supabase.from("bot_settings").update({ value: instructionEn }).eq("key", "system_instruction_en");
-    setSaveStatus("✅ Rules updated!");
+    
+    const { error: err1 } = await supabase.from("bot_settings").update({ value: instructionAr }).eq("key", "system_instruction_ar");
+    const { error: err2 } = await supabase.from("bot_settings").update({ value: instructionEn }).eq("key", "system_instruction_en");
+    
+    if (err1 || err2) {
+      alert(`❌ Access Denied: ${(err1 || err2)?.message}\n\n(Your account does not have permission to modify System Rules.)`);
+      setSaveStatus("❌ Update Failed");
+    } else {
+      setSaveStatus("✅ Rules updated!");
+    }
+    
     setTimeout(() => setSaveStatus(""), 3000);
     setIsSaving(false);
   };
@@ -97,26 +105,40 @@ const AdminPanel: React.FC = () => {
 
     try {
       if (editingQa.id) {
-        const { error } = await supabase.from("qa_entries").update(editingQa).eq("id", editingQa.id);
+        // Added .select() to check if the update was silently blocked
+        const { data, error } = await supabase.from("qa_entries").update(editingQa).eq("id", editingQa.id).select();
         if (error) throw error;
+        if (data && data.length === 0) throw new Error("Action blocked by security policy. Your specific account role does not have permission to edit existing entries.");
       } else {
         const { error } = await supabase.from("qa_entries").insert([editingQa]);
         if (error) throw error;
       }
+      
       setShowQaForm(false);
       fetchData();
+      
     } catch (error: any) {
-      alert("❌ Database Error: " + error.message);
+      console.error("DATABASE REJECTION:", error);
+      alert(`❌ Access Denied: ${error.message}`);
     }
   };
-
-  const handleDeleteQa = async (id: number) => {
+ const handleDeleteQa = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this question?")) {
-      await supabase.from("qa_entries").delete().eq("id", id);
-      fetchData();
+      // NOTE: We added .select() at the end to force Supabase to return what it deleted
+      const { data, error } = await supabase.from("qa_entries").delete().eq("id", id).select();
+      
+      if (error) {
+        console.error("DELETE REJECTION:", error);
+        alert(`❌ Delete Failed: ${error.message}\n\n(Your account does not have permission to delete entries.)`);
+      } else if (data && data.length === 0) {
+        // THIS CATCHES THE SILENT FAIL!
+        console.warn("SILENT RLS BLOCK: 0 rows deleted");
+        alert(`❌ Access Denied: Action blocked by security policy.\n\n(Your account does not have permission to delete entries.)`);
+      } else {
+        fetchData();
+      }
     }
   };
-
   const openQaForm = (entry?: QAEntry) => {
     setEditingQa(entry || { question: "", answer: "", keywords: "", category: "General", is_active: true });
     setShowQaForm(true);
